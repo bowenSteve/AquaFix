@@ -1,0 +1,19 @@
+body{
+    background-color: #E9EFFF;
+}
+
+.navbar{
+    background-color: #F8F9FA;
+    height: 80px;
+}
+
+.navbar-right{
+    margin-left: 1000;
+}
+.login-btn{
+    background-color: #51575A;
+    color: white;
+}
+.navbar-text{
+    color: rgb(0, 0, 0);
+}
