@@ -9,73 +9,16 @@ import image5 from "../images/5.jpg"
 import image6 from "../images/6.jpg"
 
 function Main() {
-  const [plumbers, setPlumbers] = useState([
+  const [plumbers, setPlumbers] = useState([]);
 
-    {
-        "image": image1,
-        "name": "John",
-        "skill": "pipe installation",
-        "rates": "$10"
-    },
-    {
-        "image": image2,
-        "name": "Alice",
-        "skill": "welding",
-        "rates": "$15"
-    },
-    {
-        "image": image3,
-        "name": "Bob",
-        "skill": "carpentry",
-        "rates": "$12"
-    },
-    {
-        "image": image4,
-        "name": "Carol",
-        "skill": "electrical wiring",
-        "rates": "$18"
-    },
-    {
-        "image": image5,
-        "name": "Dave",
-        "skill": "plumbing",
-        "rates": "$11"
-    },
-    {
-        "image": image6,
-        "name": "Eve",
-        "skill": "painting",
-        "rates": "$14"
-    },
-    {
-        "image": image1,
-        "name": "John",
-        "skill": "pipe installation",
-        "rates": "$10"
-    },
-    {
-        "image": image2,
-        "name": "Alice",
-        "skill": "welding",
-        "rates": "$15"
-    },
-    {
-        "image": image3,
-        "name": "Bob",
-        "skill": "carpentry",
-        "rates": "$12"
-    }
-
-  ]);
-
-//   useEffect(() => {
-//     fetch("http://localhost:4000/")
-//       .then((res) => res.json())
-//       .then((data) => {
-//         //setPlumbers(data);
-//         console.log(data)
-//       });
-//   }, []);
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/plumbers")
+      .then((res) => res.json())
+      .then((data) => {
+        setPlumbers(data);
+        console.log(data)
+      });
+  }, []);
 
   return (
     <div>
@@ -86,14 +29,14 @@ function Main() {
             <div className="col-md-4" key={index}>
               <div className="card mb-4 plumb-card">
                 <img
-                  src={plumber.image}
+                  src={plumber.profile.image}
                   className="card-img-top profile-picture"
-                  alt={plumber.name}
+                  alt={plumber.profile.first_name}
                 />
                 <div className="card-body">
-                  <h5 className="card-title">{plumber.name}</h5>
-                  <p className="card-text">Skill: {plumber.skill}</p>
-                  <p className="card-text">Rates: {plumber.rates}</p>
+                  <h5 className="card-title">{plumber.profile.first_name}</h5>
+                  <p className="card-text">Skill: {plumber.plumber_details.services_offered}</p>
+                  <p className="card-text">Rates: KES. {plumber.plumber_details.rates}</p>
                 </div>
               </div>
               
