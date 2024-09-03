@@ -1,1 +1,1 @@
-import 
+from models import db, User, Profile, PlumberDetail
