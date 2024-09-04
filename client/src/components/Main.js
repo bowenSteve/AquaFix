@@ -1,16 +1,12 @@
 import Navbar from "./Navbar";
 import "../styles/main.css";
 import { useState, useEffect } from "react";
-import image1 from "../images/1.jpg"
-import image2 from "../images/2.jpg"
-import image3 from "../images/3.jpg"
-import image4 from "../images/4.jpg"
-import image5 from "../images/5.jpg"
-import image6 from "../images/6.jpg"
+import { useNavigate } from "react-router-dom";
+import Footer from "./Footer";
 
 function Main() {
   const [plumbers, setPlumbers] = useState([]);
-
+  const navigate = useNavigate()
   useEffect(() => {
     fetch("http://127.0.0.1:5000/plumbers")
       .then((res) => res.json())
@@ -20,6 +16,10 @@ function Main() {
       });
   }, []);
 
+  function handleCard(id){
+    navigate(`/plumbcard/${id}`)
+  }
+
   return (
     <div>
       <Navbar />
@@ -27,7 +27,7 @@ function Main() {
         <div className="row">
           {plumbers.map((plumber, index) => (
             <div className="col-md-4" key={index}>
-              <div className="card mb-4 plumb-card">
+              <div className="card mb-4 plumb-card" onClick={()=>{handleCard(plumber.id)}}>
                 <img
                   src={plumber.profile.image}
                   className="card-img-top profile-picture"
@@ -45,6 +45,7 @@ function Main() {
         </div>
         <button className="btn btn-primary next-btn">Next</button>
       </div>
+      <Footer />
     </div>
   );
 }

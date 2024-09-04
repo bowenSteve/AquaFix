@@ -24,16 +24,22 @@ profiles_data = [
 
 # Create plumber details data (without user_id)
 plumber_details_data = [
-    {'id_number': 'PL1234567', 'years_of_experience': 5, 'services_offered': 'pipe installation', 'rates':'1000'},
-    {'id_number': 'PL2345678', 'years_of_experience': 6, 'services_offered': 'welding','rates':'2000'},
-    {'id_number': 'PL3456789', 'years_of_experience': 4, 'services_offered': 'carpentry','rates':'1500'},
-    {'id_number': 'PL4567890', 'years_of_experience': 7, 'services_offered': 'electrical wiring','rates':'3000'},
-    {'id_number': 'PL5678901', 'years_of_experience': 8, 'services_offered': 'plumbing','rates':'2000'},
-    {'id_number': 'PL6789012', 'years_of_experience': 3, 'services_offered': 'painting','rates':'2500'},
+    {'id_number': 'PL1234567', 'years_of_experience': 5, 'services_offered': 'pipe installation', 'rates': '1000'},
+    {'id_number': 'PL2345678', 'years_of_experience': 6, 'services_offered': 'welding', 'rates': '2000'},
+    {'id_number': 'PL3456789', 'years_of_experience': 4, 'services_offered': 'carpentry', 'rates': '1500'},
+    {'id_number': 'PL4567890', 'years_of_experience': 7, 'services_offered': 'electrical wiring', 'rates': '3000'},
+    {'id_number': 'PL5678901', 'years_of_experience': 8, 'services_offered': 'plumbing', 'rates': '2000'},
+    {'id_number': 'PL6789012', 'years_of_experience': 3, 'services_offered': 'painting', 'rates': '2500'},
 ]
 
 def seed_database():
     with app.app_context():
+        # Clear existing data
+        db.session.query(Profile).delete()
+        db.session.query(PlumberDetail).delete()
+        db.session.query(User).delete()
+        db.session.commit()
+        
         users = []
         
         # Add users and commit to get their IDs
