@@ -1,0 +1,36 @@
+.footer {
+    padding: 40px 0;
+    background-color: #F8F9FA;
+    height: 80px;
+}
+
+.footer-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.footer-link {
+    color: #f8f9fa;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+.footer-link:hover {
+    color: #adb5bd;
+}
+
+.footer .fab {
+    font-size: 24px;
+    color: #f8f9fa;
+    transition: color 0.3s ease-in-out;
+}
+
+.footer .fab:hover {
+    color: #adb5bd;
+}
+.footer h2,h5,p,a{
+    color: black;
+}
+.text-color{
+    color: black;
+}

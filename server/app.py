@@ -50,11 +50,35 @@ def get_plumbers():
             }
         }
         plumber_list.append(plumber_data)
-    
+
     return jsonify(plumber_list)
 
 
-
+@app.route('/plumber/<int:id>', methods=['GET'])
+def get_plumber(id):
+    plumber = User.query.filter_by(id=id).first()
+    if not plumber:
+        return jsonify({"error":"plumber not found"}),404
+    else:
+        plumber_data = {
+            'id': plumber.id,
+            'username': plumber.username,
+            'email': plumber.email,
+            'profile': {
+                'first_name': plumber.profile.first_name,
+                'last_name': plumber.profile.last_name,
+                'phone_number': plumber.profile.phone_number,
+                'location': plumber.profile.location,
+                'image': plumber.profile.image
+            },
+            'plumber_details': {
+                'id_number': plumber.plumber_details.id_number,
+                'years_of_experience': plumber.plumber_details.years_of_experience,
+                'services_offered': plumber.plumber_details.services_offered,
+                'rates':plumber.plumber_details.rates
+            }
+        }
+        return jsonify(plumber_data), 200
 
 
 

@@ -1,0 +1,15 @@
+.main-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 5px;
+}
+.card-image{
+        display: block;
+        margin: 0 auto;
+        border-radius: 50%;
+        width: 150px; 
+        height: 150px; 
+        object-fit: cover;
+}
