@@ -26,9 +26,6 @@ function Navbar() {
             </li>
           </ul>
         </div>
-         <button className="btn btn-outline-light me-0 login-btn" onClick={handleLogin} >
-          Login/Register
-        </button>
       </div>
       </nav>
   );
