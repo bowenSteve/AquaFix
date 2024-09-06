@@ -74,7 +74,7 @@ function Navbar() {
            <a className="nav-link navbar-text" aria-current="page"><Link to={"/"} className="link-style">Home</Link></a>
             </li>
             <li className="nav-item">
-              <a className="nav-link navbar-text" aria-current="page" href="#about">About Us</a>
+              <a className="nav-link navbar-text" aria-current="page"><Link to={"/aboutus"} className="link-style">About Us</Link></a>
             </li>
             <li className="nav-item">
               <a className="nav-link navbar-text" aria-current="page" href="#services">Services</a>
