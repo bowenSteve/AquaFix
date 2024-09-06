@@ -1,0 +1,23 @@
+.about-us-section {
+    background-color: #f8f9fa;
+    padding: 60px 0;
+  }
+  
+  .about-title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .about-text {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #6c757d;
+  }
+  
+  .about-image {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
