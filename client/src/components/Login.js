@@ -1,39 +1,94 @@
-import "../styles/login.css"
-import LoginNavbar from "../components/LoginNavbar"
+import { useState } from "react";
+import "../styles/login.css";
+import LoginNavbar from "../components/LoginNavbar";
+import { useNavigate } from "react-router-dom";
+
 function Login() {
-    return (
-        <div>      
-            <LoginNavbar/>
-        <div className="container mt-5">
+  const [values, setValues] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const navigate = useNavigate()
+
+
+  const handleChange = (e) => {
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  
+  const handleLogin = (e) => {
+    e.preventDefault(); 
+
+    fetch("http://127.0.0.1:5000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values), 
+    })
+      .then((r) => {
+        if (r.ok) {
+          r.json().then((data) => {
+            localStorage.setItem("token", data.access_token); 
+            navigate('/')
+            console.log(data)
+          });
+        } else {
+          r.json().then((err) => {
+            setError("Invalid email or password."); 
+          });
+        }
+      })
+      .catch((error) => {
+        setError("An error occurred. Please try again."); 
+      });
+  };
+
+  return (
+    <div>
+      <LoginNavbar />
+      <div className="container mt-5">
         <h3 className="text-center mb-4">Welcome to AquaFix</h3>
         <div className="row justify-content-center">
           <div className="col-md-6">
             <div className="card card-width p-4">
-              <form>
+              <form onSubmit={handleLogin}>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email address</label>
+                  <label htmlFor="email" className="form-label">
+                    Email address
+                  </label>
                   <input
                     type="email"
                     className="form-control form-width"
                     id="email"
+                    name="email"
                     placeholder="Enter your email"
+                    value={values.email}
+                    onChange={handleChange}
                     required
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
                   <input
                     type="password"
                     className="form-control form-width"
                     id="password"
+                    name="password"
                     placeholder="Enter your password"
+                    value={values.password}
+                    onChange={handleChange}
                     required
                   />
                 </div>
+                {error && <p className="text-danger">{error}</p>}
                 <button type="submit" className="btn btn-primary form-width mb-3">
                   Login
                 </button>
-                <div className="d-flex ">
+                <div className="d-flex">
                   <button type="button" className="btn btn-outline-danger form-width button-g">
                   <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" className="google-icon">
                         <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
@@ -43,22 +98,22 @@ function Login() {
                     </svg>
                     Continue with Google
                   </button>
-             
                 </div>
               </form>
-              <span className='text-center mt-1 mb-1'>
-                    Don't have an account? 
-                    <a href="/signup" className="signup-link"> Sign Up</a>
-                </span>
-                <hr/>
-
-
+              <span className="text-center mt-1 mb-1">
+                Don't have an account?
+                <a href="/signup" className="signup-link">
+                  {" "}
+                  Sign Up
+                </a>
+              </span>
+              <hr />
             </div>
           </div>
         </div>
       </div>
-      </div>
-    );
-  }
-  
-  export default Login;
+    </div>
+  );
+}
+
+export default Login;

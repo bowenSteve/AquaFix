@@ -1,10 +1,68 @@
 import "../styles/navbar.css";
 import { Link , useNavigate} from "react-router-dom";
+import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+
+
 
 function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState([])
+
   const navigate = useNavigate()
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      fetch("http://127.0.0.1:5000/current_user", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then(response => response.ok ? response.json() : Promise.reject("Failed to fetch current user"))
+        .then(data => {
+          if (data.id) {
+            setIsLoggedIn(true);
+          setUser(data)
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching current user:", error);
+        });
+      }
+      },[])
+
+
+  function logout(){
+    const token = localStorage.getItem('token');
+    fetch('http://127.0.0.1:5000/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          setIsLoggedIn(false);
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          console.log("Something went wrong");
+        }
+      })
+      .catch(error => {
+        console.error("Error logging out:", error);
+      });
+  };  
+
   function handleLogin(){
-    navigate('/login')
+   isLoggedIn ? logout() : navigate('/login')
   }
   return (
     <nav className="navbar navbar-expand-lg fixed-top navbar-scroll custom-navbar">
@@ -26,8 +84,16 @@ function Navbar() {
             </li>
           </ul>
         </div>
+        {isLoggedIn && (
+          <Link to={"/profile"}>
+            <span className="navbar-text me-3 main-text link-color profile-btn">
+              <FontAwesomeIcon icon={faUserCircle} size="lg" className="me-2 main-text" id="svg"/>
+              <span>{user.username}</span>
+            </span>
+          </Link>
+        )}
          <button className="btn btn-outline-light me-0 login-btn" onClick={handleLogin} >
-          Login/Register
+          <span>{ isLoggedIn ? "Logout" : "Login/Register"}</span>
         </button>
       </div>
       </nav>
