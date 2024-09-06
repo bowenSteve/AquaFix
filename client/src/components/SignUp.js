@@ -5,12 +5,52 @@ import user from "../images/use.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import LoginNavbar from "../components/LoginNavbar";
+import { useNavigate } from "react-router-dom";
 
 function SignUp() {
   const [selected, setSelected] = useState(null);
+  const navigate = useNavigate()
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
 
   const handleSelect = (type) => {
     setSelected(type);
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const dataToSubmit = {
+      ...formData,
+      is_plumber: selected === 'plumber'
+    };
+
+    fetch('http://127.0.0.1:5000/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataToSubmit)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      navigate('login')
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
   };
 
   return (
@@ -44,7 +84,7 @@ function SignUp() {
             <span className="mt-2">User</span>
           </div>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="username" className="form-label">Username</label>
             <input
@@ -52,6 +92,8 @@ function SignUp() {
               className="form-control form-width"
               id="username"
               placeholder="Enter your username"
+              value={formData.username}
+              onChange={handleChange}
               required
             />
           </div>
@@ -62,6 +104,8 @@ function SignUp() {
               className="form-control form-width"
               id="email"
               placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
@@ -72,16 +116,20 @@ function SignUp() {
               className="form-control form-width"
               id="password"
               placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="password" className="form-label">Confirm Password</label>
+            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
             <input
               type="password"
               className="form-control form-width"
-              id="password"
+              id="confirmPassword"
               placeholder="Enter your password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               required
             />
           </div>

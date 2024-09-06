@@ -1,6 +1,7 @@
 import Login from "./components/Login";
 import Main from "./components/Main"
 import PlumbCard from "./components/PlumbCard"
+import Profile from "./components/Profile";
 import SignUp from "./components/SignUp";
 
 const routes = [
@@ -19,6 +20,10 @@ const routes = [
     {
         path:'/signup',
         element: <SignUp />
+    },
+    {
+        path:'/profile',
+        element:<Profile />
     }
 ]
 
