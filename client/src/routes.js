@@ -5,6 +5,7 @@ import Main from "./components/Main"
 import PlumbCard from "./components/PlumbCard"
 import Profile from "./components/Profile";
 import SignUp from "./components/SignUp";
+import Services from "./components/Services";
 
 const routes = [
     {
@@ -30,6 +31,10 @@ const routes = [
     {
         path:'/aboutus',
         element:<AboutUs />
+    },
+    {
+        path: '/services',
+        element: <Services />
     }
 ]
 
