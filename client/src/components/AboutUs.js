@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import { Container, Row, Col, Image } from 'react-bootstrap';
 import aboutImage from "../Assets/images/Plumber.jpg";  
 import "../styles/AboutUs.css"
+import Footer from "./Footer";
 
 function About() {
     return (
@@ -31,6 +32,7 @@ function About() {
                     </Col>
                 </Row>
             </Container>
+            <Footer />
         </div>
     );
 }
