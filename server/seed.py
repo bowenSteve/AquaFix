@@ -22,16 +22,15 @@ profiles_data = [
     {'first_name': 'Eve', 'last_name': 'Green', 'phone_number': '123-456-7895', 'location': 'Philadelphia', 'image':'https://images.unsplash.com/photo-1531299102504-fc718f23c100?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
 ]
 
-# Create plumber details data (without user_id)
+# Create plumber details data (including about_me)
 plumber_details_data = [
-    {'id_number': 'PL1234567', 'years_of_experience': 5, 'services_offered': 'pipe installation', 'rates': '1000'},
-    {'id_number': 'PL2345678', 'years_of_experience': 6, 'services_offered': 'welding', 'rates': '2000'},
-    {'id_number': 'PL3456789', 'years_of_experience': 4, 'services_offered': 'carpentry', 'rates': '1500'},
-    {'id_number': 'PL4567890', 'years_of_experience': 7, 'services_offered': 'electrical wiring', 'rates': '3000'},
-    {'id_number': 'PL5678901', 'years_of_experience': 8, 'services_offered': 'plumbing', 'rates': '2000'},
-    {'id_number': 'PL6789012', 'years_of_experience': 3, 'services_offered': 'painting', 'rates': '2500'},
+    {'id_number': 'PL1234567', 'years_of_experience': 5, 'services_offered': 'pipe installation', 'rates': '1000', 'about_me': 'Experienced in pipe installation and repair.'},
+    {'id_number': 'PL2345678', 'years_of_experience': 6, 'services_offered': 'welding', 'rates': '2000', 'about_me': 'Skilled welder with expertise in various welding techniques.'},
+    {'id_number': 'PL3456789', 'years_of_experience': 4, 'services_offered': 'carpentry', 'rates': '1500', 'about_me': 'Proficient in carpentry with a focus on custom woodwork.'},
+    {'id_number': 'PL4567890', 'years_of_experience': 7, 'services_offered': 'electrical wiring', 'rates': '3000', 'about_me': 'Certified electrician with extensive experience in wiring and repairs.'},
+    {'id_number': 'PL5678901', 'years_of_experience': 8, 'services_offered': 'plumbing', 'rates': '2000', 'about_me': 'Expert plumber specializing in residential and commercial plumbing services.'},
+    {'id_number': 'PL6789012', 'years_of_experience': 3, 'services_offered': 'painting', 'rates': '2500', 'about_me': 'Creative painter with a keen eye for detail and design.'},
 ]
-
 def seed_database():
     with app.app_context():
         # Clear existing data
@@ -74,7 +73,8 @@ def seed_database():
                 id_number=detail_data['id_number'],
                 years_of_experience=detail_data['years_of_experience'],
                 services_offered=detail_data['services_offered'],
-                rates=detail_data['rates']
+                rates=detail_data['rates'],
+                about_me=detail_data['about_me']  # Add the about_me field
             )
             db.session.add(detail)
         db.session.commit()

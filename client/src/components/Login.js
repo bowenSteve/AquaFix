@@ -85,7 +85,7 @@ function Login() {
                   />
                 </div>
                 {error && <p className="text-danger">{error}</p>}
-                <button type="submit" className="btn btn-primary form-width mb-3">
+                <button type="submit" className="btn btn-primary form-width mb-3 button-g">
                   Login
                 </button>
                 <div className="d-flex">
