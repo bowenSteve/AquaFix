@@ -8,12 +8,12 @@ function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState({}); // Initialize as an empty object
   const [showNotification, setShowNotification] = useState(false); // State for notification
-
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
+    console.log(token)
     if (token) {
       fetch("http://127.0.0.1:5000/current_user", {
         method: "GET",
@@ -69,7 +69,7 @@ function Navbar() {
   function handleLogin() {
     isLoggedIn ? logout() : navigate("/login");
   }
-
+ 
   return (
     <nav className="navbar navbar-expand-lg fixed-top navbar-scroll custom-navbar">
       <div className="container-fluid d-flex justify-content-between align-items-center">

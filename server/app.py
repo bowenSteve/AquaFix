@@ -31,14 +31,40 @@ def SignUp():
     email = data.get('email')
     password = data.get('password')
     is_plumber = data.get('is_plumber')
-    if not all([username, email, password, is_plumber]):
+    if not all([username, email, password, is_plumber is not None]):
         return jsonify({"message": "All fields are required"}), 400
-    
+
     new_user = User(username=username, email=email, is_plumber=is_plumber)
     new_user.set_password(password)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"Success": "User added successfully!"}), 201
+
+@app.route('/google_signup', methods=['POST'])
+def google_signup():
+    data = request.get_json()
+    email = data.get('email')
+    
+   
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    
+    existing_user = User.query.filter_by(email=email).first()
+    
+    if existing_user:
+        return jsonify({"message": "User already exists. Please log in."}), 409
+
+   
+    new_user = User(username=email.split('@')[0], email=email, is_plumber=False)  
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({
+        "message": "User created successfully!",
+        "access_token": "your_jwt_token" 
+    }), 201
+
 #login
 @app.route('/login', methods=['POST'])
 def Login():
@@ -52,6 +78,19 @@ def Login():
         return jsonify({"access_token": access_token})
     else:
         return jsonify({"message": "Invalid email or password"}), 401
+
+@app.route('/google_login', methods=['POST'])
+def google_login():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({"msg": "Email is required"}), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error":"email is not registered"}), 404
+    access_token = create_access_token(identity=user.id)
+    return jsonify({"access_token": access_token}), 200
 
 # Logout
 BLACKLIST = set()
@@ -68,12 +107,12 @@ def logout():
 
 @app.route('/plumbers', methods=['GET'])
 def get_plumbers():
-    # Filter plumbers with is_plumber=True and completed_profile=True
+   
     plumbers = User.query.filter_by(is_plumber=True, completed_profile=True).all()
     
     plumber_list = []
     for plumber in plumbers:
-        # Ensure plumber has a profile before accessing it
+      
         if plumber.profile:
             plumber_data = {
                 'id': plumber.id,
@@ -131,11 +170,10 @@ def get_plumber(id):
 @app.route("/current_user", methods=["GET"])
 @jwt_required()
 def get_current_user():
-    current_user_id = get_jwt_identity()  # Get the user ID from the JWT
-    current_user = User.query.get(current_user_id)  # Fetch the user from the DB
+    current_user_id = get_jwt_identity()  
+    current_user = User.query.get(current_user_id)
 
     if current_user:
-        # Base user data
         user_data = {
             'id': current_user.id,
             'username': current_user.username,
@@ -154,9 +192,9 @@ def get_current_user():
                     'image': current_user.profile.image
                 }
 
-        # If the user is a plumber, include profile and plumber details
+        
         if current_user.is_plumber:
-            # Ensure profile exists before accessing its fields
+           
             if current_user.profile:
                 user_data['profile'] = {
                     'first_name': current_user.profile.first_name,
@@ -166,7 +204,7 @@ def get_current_user():
                     'image': current_user.profile.image
                 }
 
-            # Ensure plumber_details exist before accessing its fields
+           
             if current_user.plumber_details:
                 user_data['plumber_details'] = {
                     'id_number': current_user.plumber_details.id_number,
@@ -196,10 +234,9 @@ def update_profile():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Flag to track if the profile is completed
     profile_completed = True
 
-    # Update Profile
+  
     if profile_data:
         profile = Profile.query.filter_by(user_id=user_id).first()
         if profile:
@@ -209,7 +246,7 @@ def update_profile():
             profile.location = profile_data.get('location', profile.location)
             profile.image = profile_data.get('image', profile.image)
         else:
-            # Create profile if it doesn't exist
+           
             new_profile = Profile(
                 user_id=user_id,
                 first_name=profile_data.get('first_name', ''),
@@ -220,13 +257,13 @@ def update_profile():
             )
             db.session.add(new_profile)
 
-        # Check if all required fields for profile are filled
+        
         required_profile_fields = ['first_name', 'last_name', 'phone_number', 'location']
         for field in required_profile_fields:
             if not profile_data.get(field):
                 profile_completed = False
 
-    # Update Plumber Details
+    
     if user.is_plumber and plumber_details_data:
         plumber_details = PlumberDetail.query.filter_by(user_id=user_id).first()
         if plumber_details:
@@ -235,7 +272,7 @@ def update_profile():
             plumber_details.services_offered = plumber_details_data.get('services_offered', plumber_details.services_offered)
             plumber_details.rates = plumber_details_data.get('rates', plumber_details.rates)
         else:
-            # Create plumber details if they don't exist
+           
             new_plumber_details = PlumberDetail(
                 user_id=user_id,
                 id_number=plumber_details_data.get('id_number', ''),
@@ -245,13 +282,12 @@ def update_profile():
             )
             db.session.add(new_plumber_details)
 
-        # Check if all required fields for plumber details are filled
+       
         required_plumber_fields = ['id_number', 'years_of_experience', 'services_offered', 'rates']
         for field in required_plumber_fields:
             if not plumber_details_data.get(field):
                 profile_completed = False
 
-    # Update the user's completed_profile flag
     if profile_completed:
         user.completed_profile = True
 
