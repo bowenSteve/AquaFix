@@ -4,14 +4,21 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import routes from "./routes.js";
+import { Auth0Provider } from "@auth0/auth0-react";
+import { auth0Config } from './auth0-config';
 
 
 const router = createBrowserRouter(routes);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<RouterProvider router={router} />);
+root.render(
+  <Auth0Provider
+    domain={auth0Config.domain}
+    clientId={auth0Config.clientId}
+    redirectUri={auth0Config.redirectUri}
+  >
+    <RouterProvider router={router} />
+  </Auth0Provider>
+);
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

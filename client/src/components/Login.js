@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/login.css";
 import LoginNavbar from "../components/LoginNavbar";
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function Login() {
   const [values, setValues] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate()
+  const { loginWithPopup, isAuthenticated, user, getIdToken } = useAuth0();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      //navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
 
   const handleChange = (e) => {
@@ -44,6 +52,44 @@ function Login() {
         setError("An error occurred. Please try again."); 
       });
   };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithPopup({
+        prompt: 'select_account', // Ensures account selection
+      });
+  
+      if (isAuthenticated && user) {
+        // Check if the user email is registered
+        const response = await fetch("http://127.0.0.1:5000/google_login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: user.email }),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          // Save token in local storage and navigate to the homepage
+          localStorage.setItem("token", data.access_token);
+          navigate("/");
+        } else if (response.status === 404) {
+          alert("This email is not registered. Please sign up first.");
+          navigate("/signup");
+        } else {
+          console.error("Google login failed", await response.json());
+        }
+      }
+    } catch (error) {
+      console.error("Login with Google failed:", error);
+      setError("Google login failed. Please try again later.");
+    }
+  };
+  
+
+
+
 
   return (
     <div>
@@ -89,7 +135,7 @@ function Login() {
                   Login
                 </button>
                 <div className="d-flex">
-                  <button type="button" className="btn btn-outline-danger form-width button-g">
+                  <button type="button" className="btn btn-outline-danger form-width button-g" onClick={handleGoogleLogin}>
                   <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" className="google-icon">
                         <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
                         <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
