@@ -15,7 +15,7 @@ function Navbar() {
     const token = localStorage.getItem("token");
     console.log(token)
     if (token) {
-      fetch("http://127.0.0.1:5000/current_user", {
+      fetch("https://aquafix.onrender.com/current_user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ function Navbar() {
 
   function logout() {
     const token = localStorage.getItem("token");
-    fetch("http://127.0.0.1:5000/logout", {
+    fetch("https://aquafix.onrender.com/logout", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

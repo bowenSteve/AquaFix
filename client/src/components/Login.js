@@ -28,7 +28,7 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault(); 
 
-    fetch("http://127.0.0.1:5000/login", {
+    fetch("https://aquafix.onrender.com/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +61,7 @@ function Login() {
   
       if (isAuthenticated && user) {
         // Check if the user email is registered
-        const response = await fetch("http://127.0.0.1:5000/google_login", {
+        const response = await fetch("https://aquafix.onrender.com/google_login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
