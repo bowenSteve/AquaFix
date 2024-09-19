@@ -11,7 +11,7 @@ from .models import db, User, Profile, PlumberDetail
 app = Flask(__name__)
 CORS(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///aqua_db.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aqua_fix_user:N2JS55z1oNjOwa1OSMesRVShpbPXDm9y@dpg-crlu8dtumphs73edkdt0-a.oregon-postgres.render.com/aqua_fix"
 app.config["JWT_SECRET_KEY"] = "fsbdgfnhgvjnvhmvh" + str(random.randint(1, 1000000000000))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV" + str(random.randint(1, 1000000000000))
