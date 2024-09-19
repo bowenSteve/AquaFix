@@ -8,7 +8,7 @@ function Main() {
   const [plumbers, setPlumbers] = useState([]);
   const navigate = useNavigate()
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/plumbers")
+    fetch("https://aquafix.onrender.com/plumbers")
       .then((res) => res.json())
       .then((data) => {
         setPlumbers(data);

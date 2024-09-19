@@ -11,7 +11,7 @@ function PlumbCard() {
 
     useEffect(() => {
         // Fetch the plumber details
-        fetch(`http://localhost:5000/plumber/${id}`)
+        fetch(`https://aquafix.onrender.com/plumber/${id}`)
             .then(res => res.json())
             .then(data => {
                 setPlumber(data);
@@ -24,7 +24,7 @@ function PlumbCard() {
         // Check if user is logged in
         const token = localStorage.getItem('token');
         if (token) {
-            fetch("http://127.0.0.1:5000/current_user", {
+            fetch("https://aquafix.onrender.com/current_user", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
