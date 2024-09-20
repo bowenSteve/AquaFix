@@ -271,6 +271,7 @@ def update_profile():
             plumber_details.years_of_experience = plumber_details_data.get('years_of_experience', plumber_details.years_of_experience)
             plumber_details.services_offered = plumber_details_data.get('services_offered', plumber_details.services_offered)
             plumber_details.rates = plumber_details_data.get('rates', plumber_details.rates)
+            plumber_details.about_me = plumber_details_data.get('about_me', plumber_details.about_me)
         else:
            
             new_plumber_details = PlumberDetail(
@@ -278,7 +279,8 @@ def update_profile():
                 id_number=plumber_details_data.get('id_number', ''),
                 years_of_experience=plumber_details_data.get('years_of_experience', 0),
                 services_offered=plumber_details_data.get('services_offered', ''),
-                rates=plumber_details_data.get('rates', 0)
+                rates=plumber_details_data.get('rates', 0),
+                about_me=plumber_details_data.get('about_me','')
             )
             db.session.add(new_plumber_details)
 
