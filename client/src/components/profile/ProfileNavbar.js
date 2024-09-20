@@ -2,7 +2,6 @@ import "./styles/navbar.css";
 import { Link} from "react-router-dom";
 
 function Navbar({user}) {
-    console.log(user)
   return (
     <nav className="navbar navbar-expand-lg fixed-top navbar-scroll custom-navbar">
       <div className="container-fluid d-flex justify-content-between align-items-center">

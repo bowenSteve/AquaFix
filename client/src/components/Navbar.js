@@ -6,14 +6,13 @@ import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 
 function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({}); // Initialize as an empty object
-  const [showNotification, setShowNotification] = useState(false); // State for notification
+  const [user, setUser] = useState({}); 
+  const [showNotification, setShowNotification] = useState(false); 
   
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log(token)
     if (token) {
       fetch("https://aquafix.onrender.com/current_user", {
         method: "GET",
@@ -28,9 +27,7 @@ function Navbar() {
           if (data.id) {
             setIsLoggedIn(true);
             setUser(data);
-            console.log(data)
 
-            // Check if the user is a plumber and has not completed the profile
             if (data.is_plumber && !data.completed_profile) {
               setShowNotification(true);
             }
@@ -114,7 +111,6 @@ function Navbar() {
               <span>{user.username}</span>
               {showNotification && (
                 <span className="notification ms-2 text-warning">
-                  {/* Add notification message */}
                   Complete your profile
                 </span>
               )}

@@ -15,7 +15,6 @@ function PlumbCard() {
             .then(res => res.json())
             .then(data => {
                 setPlumber(data);
-                console.log(data);
             })
             .catch(error => {
                 console.error('Error fetching plumber:', error);
