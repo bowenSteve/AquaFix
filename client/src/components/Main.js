@@ -11,7 +11,7 @@ function Main() {
   const [locationFilter, setLocationFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Number of plumbers to show per page
+  const itemsPerPage = 6; 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +20,6 @@ function Main() {
       .then((data) => {
         setPlumbers(data);
         setFilteredPlumbers(data);
-        console.log(data);
       });
   }, []);
 
@@ -60,11 +59,13 @@ function Main() {
       );
     }
 
+    // Sort by rates in ascending order
+    filtered.sort((a, b) => a.plumber_details.rates - b.plumber_details.rates);
+
     setFilteredPlumbers(filtered);
-    setCurrentPage(1); // Reset to the first page when filters change
+    setCurrentPage(1); 
   }
 
-  // Pagination Logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentPlumbers = filteredPlumbers.slice(
