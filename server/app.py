@@ -5,13 +5,13 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required, get_jwt
 import random
 from datetime import timedelta
-from models import db, User, Profile, PlumberDetail
+from .models import db, User, Profile, PlumberDetail
 
 
 app = Flask(__name__)
 CORS(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost/aqua_db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aqua_fix_user:N2JS55z1oNjOwa1OSMesRVShpbPXDm9y@dpg-crlu8dtumphs73edkdt0-a.oregon-postgres.render.com/aqua_fix"
 app.config["JWT_SECRET_KEY"] = "fsbdgfnhgvjnvhmvh" + str(random.randint(1, 1000000000000))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV" + str(random.randint(1, 1000000000000))
@@ -271,6 +271,7 @@ def update_profile():
             plumber_details.years_of_experience = plumber_details_data.get('years_of_experience', plumber_details.years_of_experience)
             plumber_details.services_offered = plumber_details_data.get('services_offered', plumber_details.services_offered)
             plumber_details.rates = plumber_details_data.get('rates', plumber_details.rates)
+            plumber_details.about_me = plumber_details_data.get('about_me', plumber_details.about_me)
         else:
            
             new_plumber_details = PlumberDetail(
@@ -278,7 +279,8 @@ def update_profile():
                 id_number=plumber_details_data.get('id_number', ''),
                 years_of_experience=plumber_details_data.get('years_of_experience', 0),
                 services_offered=plumber_details_data.get('services_offered', ''),
-                rates=plumber_details_data.get('rates', 0)
+                rates=plumber_details_data.get('rates', 0),
+                about_me=plumber_details_data.get('about_me','')
             )
             db.session.add(new_plumber_details)
 

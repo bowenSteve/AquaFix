@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import "../styles/plumbcard.css";
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -10,21 +11,18 @@ function PlumbCard() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        // Fetch the plumber details
-        fetch(`http://localhost:5000/plumber/${id}`)
+        fetch(`https://aquafix.onrender.com/plumber/${id}`)
             .then(res => res.json())
             .then(data => {
                 setPlumber(data);
-                console.log(data);
             })
             .catch(error => {
                 console.error('Error fetching plumber:', error);
             });
 
-        // Check if user is logged in
         const token = localStorage.getItem('token');
         if (token) {
-            fetch("http://127.0.0.1:5000/current_user", {
+            fetch("https://aquafix.onrender.com/current_user", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -63,7 +61,7 @@ function PlumbCard() {
                             <p className="card-text"><strong>Skill</strong>: {plumber.plumber_details.services_offered}</p>
                             <p className="card-text"><strong>Rates</strong>: KES. {plumber.plumber_details.rates}</p>
                             <p className="card-text"><strong>Location</strong>: {plumber.profile.location}</p>
-                            {isLoggedIn ? <span><strong>Contact: </strong>{plumber.profile.phone_number}</span> : <span className='text-warning'>Log in to view Contact</span>}
+                            {isLoggedIn ? <span><strong>Contact: </strong>{plumber.profile.phone_number}</span> : <span><Link to={"/login"} className='plumb-link text-warning'>Log in to view Contact</Link></span>}
                         </div>
                     </div>
                 </div>

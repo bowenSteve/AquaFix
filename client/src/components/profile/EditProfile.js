@@ -15,7 +15,8 @@ function EditProfile({ plumber }) {
     id_number: '',
     years_of_experience: '',
     services_offered: '',
-    rates: ''
+    rates: '',
+    about_me: '' // Added about_me field
   });
 
   const [isEditing, setIsEditing] = useState({
@@ -27,7 +28,8 @@ function EditProfile({ plumber }) {
     id_number: false,
     years_of_experience: false,
     services_offered: false,
-    rates: false
+    rates: false,
+    about_me: false // Added about_me field
   });
 
   useEffect(() => {
@@ -45,7 +47,8 @@ function EditProfile({ plumber }) {
         id_number: plumber.plumber_details.id_number || '',
         years_of_experience: plumber.plumber_details.years_of_experience || '',
         services_offered: plumber.plumber_details.services_offered || '',
-        rates: plumber.plumber_details.rates || ''
+        rates: plumber.plumber_details.rates || '',
+        about_me: plumber.plumber_details.about_me || '' // Set the about_me field
       });
     }
   }, [plumber]);
@@ -75,7 +78,7 @@ function EditProfile({ plumber }) {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
-    fetch(`http://127.0.0.1:5000/update_profile`, {
+    fetch(`https://aquafix.onrender.com/update_profile`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +123,6 @@ function EditProfile({ plumber }) {
                 />
               ) : (
                 <div className="profile-picture-container">
-                  
                   <img 
                     src={profile['image'] || '/default-profile.png'} 
                     alt="Profile" 
@@ -196,9 +198,13 @@ function EditProfile({ plumber }) {
             ))}
           </div>
         )}
-        
-        {/* Save Changes Button */}
-        <button type="submit" className="btn btn-primary save-button">Save Changes</button>
+
+        {/* Submit Button */}
+        <div className="row mt-4">
+          <div className="col-md-12">
+            <button type="submit" className="btn btn-primary">Save Changes</button>
+          </div>
+        </div>
       </form>
     </div>
   );
