@@ -14,6 +14,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(250), nullable=False)
     is_plumber = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    completed_profile = db.Column(db.Boolean, default=False)
 
     profile = db.relationship('Profile', backref='user', uselist=False)
     plumber_details = db.relationship('PlumberDetail', backref='user', uselist=False)
@@ -50,6 +51,7 @@ class PlumberDetail(db.Model):
     years_of_experience = db.Column(db.Integer, nullable=False)
     services_offered = db.Column(db.String(250), nullable=False)
     rates = db.Column(db.Integer)
+    about_me = db.Column(db.String(500), nullable=True) 
 
     def __repr__(self):
         return f'<PlumberDetail {self.id_number}>'

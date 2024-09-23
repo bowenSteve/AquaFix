@@ -31,14 +31,40 @@ def SignUp():
     email = data.get('email')
     password = data.get('password')
     is_plumber = data.get('is_plumber')
-    if not all([username, email, password, is_plumber]):
+    if not all([username, email, password, is_plumber is not None]):
         return jsonify({"message": "All fields are required"}), 400
-    
-    new_user = User(username=username, email=email,is_plumber=is_plumber)
+
+    new_user = User(username=username, email=email, is_plumber=is_plumber)
     new_user.set_password(password)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"Success": "User added successfully!"}), 201
+
+@app.route('/google_signup', methods=['POST'])
+def google_signup():
+    data = request.get_json()
+    email = data.get('email')
+    
+   
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    
+    existing_user = User.query.filter_by(email=email).first()
+    
+    if existing_user:
+        return jsonify({"message": "User already exists. Please log in."}), 409
+
+   
+    new_user = User(username=email.split('@')[0], email=email, is_plumber=False)  
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({
+        "message": "User created successfully!",
+        "access_token": "your_jwt_token" 
+    }), 201
+
 #login
 @app.route('/login', methods=['POST'])
 def Login():
@@ -52,6 +78,19 @@ def Login():
         return jsonify({"access_token": access_token})
     else:
         return jsonify({"message": "Invalid email or password"}), 401
+
+@app.route('/google_login', methods=['POST'])
+def google_login():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({"msg": "Email is required"}), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error":"email is not registered"}), 404
+    access_token = create_access_token(identity=user.id)
+    return jsonify({"access_token": access_token}), 200
 
 # Logout
 BLACKLIST = set()
@@ -68,36 +107,40 @@ def logout():
 
 @app.route('/plumbers', methods=['GET'])
 def get_plumbers():
-    plumbers = User.query.filter_by(is_plumber=True).all()
+   
+    plumbers = User.query.filter_by(is_plumber=True, completed_profile=True).all()
     
     plumber_list = []
     for plumber in plumbers:
-        plumber_data = {
-            'id': plumber.id,
-            'username': plumber.username,
-            'email': plumber.email,
-            'profile': {
-                'first_name': plumber.profile.first_name,
-                'last_name': plumber.profile.last_name,
-                'phone_number': plumber.profile.phone_number,
-                'location': plumber.profile.location,
-                'image': plumber.profile.image
-            },
-            'plumber_details': {
-                'id_number': plumber.plumber_details.id_number,
-                'years_of_experience': plumber.plumber_details.years_of_experience,
-                'services_offered': plumber.plumber_details.services_offered,
-                'rates':plumber.plumber_details.rates
+      
+        if plumber.profile:
+            plumber_data = {
+                'id': plumber.id,
+                'username': plumber.username,
+                'email': plumber.email,
+                'profile': {
+                    'first_name': plumber.profile.first_name,
+                    'last_name': plumber.profile.last_name,
+                    'phone_number': plumber.profile.phone_number,
+                    'location': plumber.profile.location,
+                    'image': plumber.profile.image
+                },
+                'plumber_details': {
+                    'id_number': plumber.plumber_details.id_number,
+                    'years_of_experience': plumber.plumber_details.years_of_experience,
+                    'services_offered': plumber.plumber_details.services_offered,
+                    'rates':plumber.plumber_details.rates
             }
-        }
-        plumber_list.append(plumber_data)
+            }
+            plumber_list.append(plumber_data)
 
     return jsonify(plumber_list)
 
 
+
 @app.route('/plumber/<int:id>', methods=['GET'])
 def get_plumber(id):
-    plumber = User.query.filter_by(id=id).first()
+    plumber = User.query.filter_by(id=id, is_plumber=True).first()
     if not plumber:
         return jsonify({"error":"plumber not found"}),404
     else:
@@ -116,7 +159,8 @@ def get_plumber(id):
                 'id_number': plumber.plumber_details.id_number,
                 'years_of_experience': plumber.plumber_details.years_of_experience,
                 'services_offered': plumber.plumber_details.services_offered,
-                'rates':plumber.plumber_details.rates
+                'rates':plumber.plumber_details.rates,
+                'about_me':plumber.plumber_details.about_me
             }
         }
         return jsonify(plumber_data), 200
@@ -126,22 +170,130 @@ def get_plumber(id):
 @app.route("/current_user", methods=["GET"])
 @jwt_required()
 def get_current_user():
-    current_user_id = get_jwt_identity()  # Get the user ID from the JWT
-    current_user = User.query.get(current_user_id)  # Fetch the user from the DB
+    current_user_id = get_jwt_identity()  
+    current_user = User.query.get(current_user_id)
 
     if current_user:
-        return jsonify({
-            "id": current_user.id,
-            "username": current_user.username,
-            "email": current_user.email,
-            "is_plumber":current_user.is_plumber
-        }), 200
-    else:
+        user_data = {
+            'id': current_user.id,
+            'username': current_user.username,
+            'email': current_user.email,
+            'is_plumber': current_user.is_plumber,
+            'completed_profile': current_user.completed_profile
+        }
+
+        if current_user.completed_profile:
+            if current_user.profile:
+                user_data['profile'] = {
+                    'first_name': current_user.profile.first_name,
+                    'last_name': current_user.profile.last_name,
+                    'phone_number': current_user.profile.phone_number,
+                    'location': current_user.profile.location,
+                    'image': current_user.profile.image
+                }
+
+        
+        if current_user.is_plumber:
+           
+            if current_user.profile:
+                user_data['profile'] = {
+                    'first_name': current_user.profile.first_name,
+                    'last_name': current_user.profile.last_name,
+                    'phone_number': current_user.profile.phone_number,
+                    'location': current_user.profile.location,
+                    'image': current_user.profile.image
+                }
+
+           
+            if current_user.plumber_details:
+                user_data['plumber_details'] = {
+                    'id_number': current_user.plumber_details.id_number,
+                    'years_of_experience': current_user.plumber_details.years_of_experience,
+                    'services_offered': current_user.plumber_details.services_offered,
+                    'rates': current_user.plumber_details.rates,
+                    'about_me': current_user.plumber_details.about_me
+                }
+
+        return jsonify(user_data), 200
+
+    return jsonify({"error": "User not found"}), 404
+
+
+@app.route('/update_profile', methods=['PATCH'])
+def update_profile():
+    data = request.get_json()
+
+    user_id = data.get('user_id')
+    profile_data = data.get('profile')
+    plumber_details_data = data.get('plumber_details')
+
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    user = User.query.get(user_id)
+    if not user:
         return jsonify({"error": "User not found"}), 404
 
+    profile_completed = True
 
+  
+    if profile_data:
+        profile = Profile.query.filter_by(user_id=user_id).first()
+        if profile:
+            profile.first_name = profile_data.get('first_name', profile.first_name)
+            profile.last_name = profile_data.get('last_name', profile.last_name)
+            profile.phone_number = profile_data.get('phone_number', profile.phone_number)
+            profile.location = profile_data.get('location', profile.location)
+            profile.image = profile_data.get('image', profile.image)
+        else:
+           
+            new_profile = Profile(
+                user_id=user_id,
+                first_name=profile_data.get('first_name', ''),
+                last_name=profile_data.get('last_name', ''),
+                phone_number=profile_data.get('phone_number', ''),
+                location=profile_data.get('location', ''),
+                image=profile_data.get('image', '')
+            )
+            db.session.add(new_profile)
 
+        
+        required_profile_fields = ['first_name', 'last_name', 'phone_number', 'location']
+        for field in required_profile_fields:
+            if not profile_data.get(field):
+                profile_completed = False
 
+    
+    if user.is_plumber and plumber_details_data:
+        plumber_details = PlumberDetail.query.filter_by(user_id=user_id).first()
+        if plumber_details:
+            plumber_details.id_number = plumber_details_data.get('id_number', plumber_details.id_number)
+            plumber_details.years_of_experience = plumber_details_data.get('years_of_experience', plumber_details.years_of_experience)
+            plumber_details.services_offered = plumber_details_data.get('services_offered', plumber_details.services_offered)
+            plumber_details.rates = plumber_details_data.get('rates', plumber_details.rates)
+        else:
+           
+            new_plumber_details = PlumberDetail(
+                user_id=user_id,
+                id_number=plumber_details_data.get('id_number', ''),
+                years_of_experience=plumber_details_data.get('years_of_experience', 0),
+                services_offered=plumber_details_data.get('services_offered', ''),
+                rates=plumber_details_data.get('rates', 0)
+            )
+            db.session.add(new_plumber_details)
+
+       
+        required_plumber_fields = ['id_number', 'years_of_experience', 'services_offered', 'rates']
+        for field in required_plumber_fields:
+            if not plumber_details_data.get(field):
+                profile_completed = False
+
+    if profile_completed:
+        user.completed_profile = True
+
+    db.session.commit()
+
+    return jsonify({"message": "Profile updated successfully"}), 200
 
 
 

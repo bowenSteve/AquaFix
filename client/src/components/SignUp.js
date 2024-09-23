@@ -45,11 +45,12 @@ function SignUp() {
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data);
-      navigate('login')
+      alert("Your account has been created successfully")
+      navigate('/login')
     })
     .catch(error => {
       console.error('Error:', error);
+      alert(error.message || 'An error occurred. Please try again.');
     });
   };
 
@@ -133,7 +134,7 @@ function SignUp() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100 mb-3">
+          <button type="submit" className="btn btn-primary w-100 button-g mb-3">
             Sign Up
           </button>
         </form>
