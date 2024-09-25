@@ -6,6 +6,7 @@ import PlumbCard from "./components/PlumbCard"
 import Profile from "./components/profile/Profile";
 import SignUp from "./components/SignUp";
 import Services from "./components/Services";
+import Contact from "./components/Contact";
 
 const routes = [
     {
@@ -35,6 +36,10 @@ const routes = [
     {
         path: '/services',
         element: <Services />
+    },
+    {
+        path: '/contact',
+        element: <Contact />
     }
 ]
 

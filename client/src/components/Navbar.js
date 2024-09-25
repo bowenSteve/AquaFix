@@ -93,12 +93,16 @@ function Navbar() {
             </li>
             <li className="nav-item">
               <a className="nav-link navbar-text" aria-current="page" href="#services">
+                <Link to={"/services"} className="link-style">
                 Services
+                </Link>
               </a>
             </li>
             <li className="nav-item">
               <a className="nav-link navbar-text" aria-current="page" href="#contact">
+                <Link to={"/contact"} className="link-style">
                 Contact
+                </Link>
               </a>
             </li>
           </ul>
