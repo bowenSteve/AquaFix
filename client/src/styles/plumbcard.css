@@ -16,3 +16,15 @@
 .plumb-link{
     text-decoration: none;
 }
+.bg-color{
+    background-color: rgb(228, 228, 243);
+    height: 100px;
+    width: 200px;
+    margin: 0 auto;    
+}
+.star-rating {
+    color: gold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

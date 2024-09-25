@@ -4,17 +4,22 @@ import { Link } from 'react-router-dom';
 import "../styles/plumbcard.css";
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 
 function PlumbCard() {
     const { id } = useParams();
     const [plumber, setPlumber] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [rating, setRating] = useState(3); // Hardcoded rating for testing
 
     useEffect(() => {
         fetch(`https://aquafix.onrender.com/plumber/${id}`)
             .then(res => res.json())
             .then(data => {
                 setPlumber(data);
+                // Comment out the line below to keep the hardcoded rating
+                // setRating(data.average_rating || 4.5); // This was overwriting the hardcoded rating
             })
             .catch(error => {
                 console.error('Error fetching plumber:', error);
@@ -40,6 +45,25 @@ function PlumbCard() {
         }
     }, [id]);
 
+    // Function to render stars based on the rating value
+    const renderStars = (rating) => {
+        const fullStars = Math.floor(rating);   // Full stars
+        const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Half star if the rating has 0.5
+        const emptyStars = 5 - fullStars - halfStars; // Remaining empty stars
+        // Create an array of full, half, and placeholder stars
+        return (
+            <>
+                {[...Array(fullStars)].map((_, index) => (
+                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "gold" }} />
+                ))}
+                {halfStars === 1 && <FontAwesomeIcon icon={faStarHalfAlt} style={{ color: "gold" }} />}
+                {[...Array(emptyStars)].map((_, index) => (
+                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "lightgray" }} />
+                ))}
+            </>
+        );
+    };
+
     if (!plumber) {
         return <div className="alert alert-danger" role="alert">Plumber not found</div>;
     }
@@ -61,7 +85,18 @@ function PlumbCard() {
                             <p className="card-text"><strong>Skill</strong>: {plumber.plumber_details.services_offered}</p>
                             <p className="card-text"><strong>Rates</strong>: KES. {plumber.plumber_details.rates}</p>
                             <p className="card-text"><strong>Location</strong>: {plumber.profile.location}</p>
-                            {isLoggedIn ? <span><strong>Contact: </strong>{plumber.profile.phone_number}</span> : <span><Link to={"/login"} className='plumb-link text-warning'>Log in to view Contact</Link></span>}
+                            {isLoggedIn ? (
+                                <span><strong>Contact: </strong>{plumber.profile.phone_number}</span>
+                            ) : (
+                                <span><Link to={"/login"} className='plumb-link text-warning'>Log in to view Contact</Link></span>
+                            )}
+                        </div>
+                        <div className='card bg-color'>
+                            <p>Average User Rating</p>
+                            <div className='star-rating'>
+                                {renderStars(rating)}
+                                <p className='mt-1'>{rating}/5</p>
+                            </div>
                         </div>
                     </div>
                 </div>
