@@ -1,0 +1,28 @@
+.contact-container {
+    margin-top: 100px;
+    height: 100vh;
+
+}
+
+.contact-container h2 {
+    font-weight: bold;
+}
+
+.map-container {
+    margin-top: 20px;
+    border: none;
+    overflow: hidden;
+    height: 300px;
+}
+
+ul.list-inline {
+    padding-left: 0;
+}
+
+ul.list-inline-item {
+    margin-right: 15px;
+}
+
+.fab {
+    margin-right: 8px;
+}
