@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import "../styles/contact.css";
 import Navbar from './Navbar';
+import Footer from './Footer';
 
 const Contact = () => {
     return (
@@ -70,6 +71,7 @@ const Contact = () => {
                 </Col>
             </Row>
         </Container>
+        <Footer />
         </div>
     );
 };
