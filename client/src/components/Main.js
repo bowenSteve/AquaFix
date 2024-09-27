@@ -15,7 +15,7 @@ function Main() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("https://aquafix.onrender.com/plumbers")
+    fetch("/plumbers")
       .then((res) => res.json())
       .then((data) => {
         setPlumbers(data);

@@ -16,7 +16,7 @@ function Profile() {
       const token = localStorage.getItem('token');
   
       if (token) {
-        fetch("https://aquafix.onrender.com/current_user", {
+        fetch("/current_user", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`

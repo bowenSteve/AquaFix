@@ -5,13 +5,13 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required, get_jwt
 import random
 from datetime import timedelta
-from .models import db, User, Profile, PlumberDetail
+from models import db, User, Profile, PlumberDetail
 
 
 app = Flask(__name__)
 CORS(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aqua_fix_user:N2JS55z1oNjOwa1OSMesRVShpbPXDm9y@dpg-crlu8dtumphs73edkdt0-a.oregon-postgres.render.com/aqua_fix"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost/aqua_db"
 app.config["JWT_SECRET_KEY"] = "fsbdgfnhgvjnvhmvh" + str(random.randint(1, 1000000000000))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV" + str(random.randint(1, 1000000000000))
@@ -300,23 +300,81 @@ def update_profile():
 
 
 
+# chat section
+#create room
+@app.route('/chatroom', methods=['POST'])
+@jwt_required()
+def get_or_create_chatroom():
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
+    plumber_id = data.get('plumber_id')
 
+    if not plumber_id:
+        return jsonify({"error": "Plumber ID is required"}), 400
 
+    # Check if a chatroom already exists between the current user and the plumber
+    chatroom = ChatRoom.query.filter_by(user_id=current_user_id, plumber_id=plumber_id).first()
+    
+    if not chatroom:
+        # Create a new chatroom
+        chatroom = ChatRoom(user_id=current_user_id, plumber_id=plumber_id)
+        db.session.add(chatroom)
+        db.session.commit()
 
+    return jsonify({"chatroom_id": chatroom.id}), 201
 
+#send message
+@app.route('/chatroom/<int:chatroom_id>/message', methods=['POST'])
+@jwt_required()
+def send_message(chatroom_id):
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
+    content = data.get('content')
+    receiver_id = data.get('receiver_id')
 
+    if not content or not receiver_id:
+        return jsonify({"error": "Content and receiver ID are required"}), 400
 
+    # Ensure the chatroom exists and the current user is part of the chatroom
+    chatroom = ChatRoom.query.get_or_404(chatroom_id)
+    if chatroom.user_id != current_user_id and chatroom.plumber_id != current_user_id:
+        return jsonify({"error": "Unauthorized to send message in this chatroom"}), 403
 
+    # Create and store the message
+    message = Message(chatroom_id=chatroom.id, sender_id=current_user_id, receiver_id=receiver_id, content=content)
+    db.session.add(message)
+    db.session.commit()
 
+    return jsonify({"success": "Message sent"}), 201
 
+#get message
+@app.route('/chatroom/<int:chatroom_id>/messages', methods=['GET'])
+@jwt_required()
+def get_chat_messages(chatroom_id):
+    current_user_id = get_jwt_identity()
 
+    # Ensure the chatroom exists and the current user is part of the chatroom
+    chatroom = ChatRoom.query.get_or_404(chatroom_id)
+    if chatroom.user_id != current_user_id and chatroom.plumber_id != current_user_id:
+        return jsonify({"error": "Unauthorized to view messages in this chatroom"}), 403
 
+    # Retrieve all messages in the chatroom
+    messages = Message.query.filter_by(chatroom_id=chatroom.id).order_by(Message.timestamp).all()
+    
+    message_list = []
+    for message in messages:
+        message_list.append({
+            'sender_id': message.sender_id,
+            'receiver_id': message.receiver_id,
+            'content': message.content,
+            'timestamp': message.timestamp
+        })
 
-
-
+    return jsonify(message_list), 200
 
 
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+

@@ -12,14 +12,14 @@ function PlumbCard() {
     const [plumber, setPlumber] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [rating, setRating] = useState(3); // Hardcoded rating for testing
+    const [showChat, setShowChat] = useState(false); // State to toggle chat window
+    const [message, setMessage] = useState(""); // State to handle the message text
 
     useEffect(() => {
-        fetch(`https://aquafix.onrender.com/plumber/${id}`)
+        fetch(`/plumber/${id}`)
             .then(res => res.json())
             .then(data => {
                 setPlumber(data);
-                // Comment out the line below to keep the hardcoded rating
-                // setRating(data.average_rating || 4.5); // This was overwriting the hardcoded rating
             })
             .catch(error => {
                 console.error('Error fetching plumber:', error);
@@ -27,7 +27,7 @@ function PlumbCard() {
 
         const token = localStorage.getItem('token');
         if (token) {
-            fetch("https://aquafix.onrender.com/current_user", {
+            fetch("/current_user", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -64,6 +64,18 @@ function PlumbCard() {
         );
     };
 
+    // Function to handle chat toggling
+    const handleChatToggle = () => {
+        setShowChat(!showChat);
+    };
+
+    // Function to handle sending message
+    const handleSendMessage = () => {
+        console.log("Message sent:", message);
+        // Add code here to send the message to the server or handle the message
+        setMessage(""); // Clear message input after sending
+    };
+
     if (!plumber) {
         return <div className="alert alert-danger" role="alert">Plumber not found</div>;
     }
@@ -74,6 +86,32 @@ function PlumbCard() {
             <div className='container main-card'>
                 <div className="col-md-12">
                     <div className="card mb-4">
+                        {/* Send Message Button */}
+                        <button
+                            className="btn btn-primary"
+                            style={{ position: "absolute", top: "10px", right: "10px" }}
+                            onClick={handleChatToggle}
+                        >
+                            Chat with {plumber.profile.first_name}
+                        </button>
+
+                        {/* Chat Area (Visible when Send Message is clicked) */}
+                        {showChat && (
+                            <div className="card chat-card mt-4" style={{ position: "absolute", top: "50px", right: "10px", width: "300px" }}>
+                                <div className="card-body">
+                                    <p>Start a conversation with {plumber.profile.first_name}</p>
+                                    <textarea
+                                        className="form-control mb-3"
+                                        rows="3"
+                                        placeholder="Type your message..."
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                    ></textarea>
+                                    <button className="btn btn-primary" onClick={handleSendMessage}>Send Message</button>
+                                </div>
+                            </div>
+                        )}
+
                         <img
                             src={plumber.profile.image}
                             className="card-img-top profile-picture card-image"

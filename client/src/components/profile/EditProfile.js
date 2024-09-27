@@ -78,7 +78,7 @@ function EditProfile({ plumber }) {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
-    fetch(`https://aquafix.onrender.com/update_profile`, {
+    fetch(`/update_profile`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
