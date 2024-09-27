@@ -4,8 +4,9 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required, get_jwt
 import random
+from sqlalchemy import or_ 
 from datetime import timedelta
-from models import db, User, Profile, PlumberDetail
+from models import db, User, Profile, PlumberDetail, ChatRoom, Message
 
 
 app = Flask(__name__)
@@ -329,8 +330,8 @@ def get_or_create_chatroom():
 def send_message(chatroom_id):
     current_user_id = get_jwt_identity()
     data = request.get_json()
-    content = data.get('content')
-    receiver_id = data.get('receiver_id')
+    content = data.get('message')
+    receiver_id = int(data.get('plumber_id'))
 
     if not content or not receiver_id:
         return jsonify({"error": "Content and receiver ID are required"}), 400
@@ -347,31 +348,55 @@ def send_message(chatroom_id):
 
     return jsonify({"success": "Message sent"}), 201
 
-#get message
-@app.route('/chatroom/<int:chatroom_id>/messages', methods=['GET'])
+#get chatroom
+
+
+
+@app.route('/chatroom/<int:plumber_id>', methods=['GET'])
 @jwt_required()
-def get_chat_messages(chatroom_id):
-    current_user_id = get_jwt_identity()
+def get_chatroom(plumber_id):
+    current_user_id = get_jwt_identity()  # Get the currently logged-in user's ID
 
-    # Ensure the chatroom exists and the current user is part of the chatroom
-    chatroom = ChatRoom.query.get_or_404(chatroom_id)
-    if chatroom.user_id != current_user_id and chatroom.plumber_id != current_user_id:
-        return jsonify({"error": "Unauthorized to view messages in this chatroom"}), 403
+    # Query the chatroom for the current user and the specified plumber
+    chatroom = ChatRoom.query.filter_by(user_id=current_user_id, plumber_id=plumber_id).first()
 
-    # Retrieve all messages in the chatroom
-    messages = Message.query.filter_by(chatroom_id=chatroom.id).order_by(Message.timestamp).all()
+    if chatroom:
+        return jsonify({'chatroom_id': chatroom.id}), 200  # Return the chatroom ID if found
+    else:
+        return jsonify({'message': 'Chatroom not found'}), 404  # Return an error if not found
+
+#get messages
+@app.route('/chatroom/<plumber_id>/messages', methods=['GET'])
+@jwt_required()
+def get_messages(plumber_id):
+    current_user_id = get_jwt_identity()  # Get the current user's ID from the JWT
     
-    message_list = []
-    for message in messages:
-        message_list.append({
-            'sender_id': message.sender_id,
-            'receiver_id': message.receiver_id,
-            'content': message.content,
-            'timestamp': message.timestamp
-        })
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized"}), 403
 
-    return jsonify(message_list), 200
+    print(f"Current user ID: {current_user_id}")  # Debugging log to check the identity
 
+    # Fetch messages from the database where either user is the sender or recipient
+    messages = Message.query.filter(
+        or_(
+            (Message.sender_id == current_user_id) & (Message.receiver_id == plumber_id),
+            (Message.sender_id == plumber_id) & (Message.receiver_id == current_user_id)
+        )
+    ).order_by(Message.timestamp.asc()).all()
+
+    if not messages:
+        return jsonify({'message': 'No messages found'}), 404
+
+    # Convert messages to a JSON-serializable format
+    messages_list = [{
+        'id': message.id,
+        'sender_id': message.sender_id,
+        'receiver_id': message.receiver_id,
+        'message': message.content,  # Ensure this matches the field name in your model
+        'timestamp': message.timestamp.isoformat()  # Format timestamp for JSON
+    } for message in messages]
+
+    return jsonify(messages_list), 200
 
 
 

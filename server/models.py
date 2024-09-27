@@ -62,9 +62,12 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     chatroom_id = db.Column(db.Integer, db.ForeignKey('chat_rooms.id'), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Renamed from `receiver_id` to `recipient_id`
     content = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = relationship('User', foreign_keys=[sender_id])
+    recipient = relationship('User', foreign_keys=[receiver_id])
 
     def __repr__(self):
         return f'<Message from {self.sender_id} to {self.receiver_id}: {self.content}>'
