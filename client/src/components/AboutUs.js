@@ -39,8 +39,6 @@ function About() {
                         </Row>
                     </Col>
                 </Row>
-
-                {/* Testimonials Section */}
                 <Row className="testimonials-section">
                     <Col md={12}>
                         <h3 className="testimonials-title">What Our Customers Say</h3>
@@ -66,8 +64,6 @@ function About() {
                         </Row>
                     </Col>
                 </Row>
-
-                {/* Team Section */}
                 <Row className="team-section">
                     <Col md={12}>
                         <h3 className="team-title">Meet Our Team</h3>
@@ -90,8 +86,6 @@ function About() {
                         </Row>
                     </Col>
                 </Row>
-
-                {/* Call to Action Section */}
                 <Row className="cta-section">
                     <Col md={12} className="text-center">
                         <h4 className="cta-text">Need Immediate Help?</h4>
