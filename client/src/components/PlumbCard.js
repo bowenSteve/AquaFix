@@ -16,6 +16,7 @@ function PlumbCard() {
     const [message, setMessage] = useState(""); // State to handle the message text
     const [chatroomId, setChatroomId] = useState(null); // Initialize as null
     const [messages, setMessages] = useState([])
+    const [currentUser, setCurrentUser] = useState('')
 
     useEffect(() => {
         fetch(`/plumber/${id}`)
@@ -44,6 +45,7 @@ function PlumbCard() {
                 .then(data => {
                     if (data.id) {
                         setIsLoggedIn(true);
+                        setCurrentUser(data)
                     }
                 })
                 .catch(error => {
@@ -71,7 +73,26 @@ function PlumbCard() {
         );
     };
     console.log(messages)
+    //function to create chatroom
 
+    const createChatroom = () =>{
+        const token = localStorage.getItem('token');
+        fetch('/chatroom',{
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({plumber_id:id})
+        })
+        .then(res=>res.json())
+        .then(res=>{
+            console.log(res)
+        })
+    }
+useEffect((()=>{
+    createChatroom()
+}),[])
     // Function to handle chat toggling
     const handleChatToggle = () => {
         setShowChat(!showChat);
@@ -130,6 +151,7 @@ function PlumbCard() {
         });
     };
     
+    
     // Call this function whenever you need to fetch messages, e.g., when the chat window is opened.
     
 
@@ -185,12 +207,22 @@ function PlumbCard() {
                                     <p>Start a conversation with {plumber.profile.first_name}</p>
                                     <div className="messages-container">
     {messages.map((msg, index) => (
-        <div key={index} className={msg.sender_id === id ? 'sent' : 'received'}>
+        <div key={index} className={`message ${msg.sender_id === currentUser.id ? 'sent' : 'received'}`}>
+            {/* Display the name of the message sender */}
+            <p className="message-sender">
+                {msg.sender_id === currentUser.id
+                    ? currentUser.profile.first_name  // If the logged-in user is the sender
+                    : plumber.profile.first_name       // If the plumber is the sender
+                }
+            </p>
             <p>{msg.message}</p>
             <span>{new Date(msg.timestamp).toLocaleString()}</span>
         </div>
     ))}
 </div>
+
+
+
 
                                     <textarea
                                         className="form-control mb-3"
