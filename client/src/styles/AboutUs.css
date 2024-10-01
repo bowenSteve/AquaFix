@@ -81,7 +81,7 @@
 }
 
 .team-member img {
-  width: 100%;  /* Make team member images responsive */
+  width: 50%;  /* Make team member images responsive */
   height: auto;
   border-radius: 50%;  /* Optional: To make the images circular */
   margin-bottom: 10px;
