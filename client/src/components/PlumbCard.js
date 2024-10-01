@@ -211,7 +211,7 @@ useEffect((()=>{
             {/* Display the name of the message sender */}
             <p className="message-sender">
                 {msg.sender_id === currentUser.id
-                    ? currentUser.profile.first_name  // If the logged-in user is the sender
+                    ? currentUser.username  // If the logged-in user is the sender
                     : plumber.profile.first_name       // If the plumber is the sender
                 }
             </p>
