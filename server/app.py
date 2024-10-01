@@ -6,7 +6,7 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity
 import random
 from sqlalchemy import or_ 
 from datetime import timedelta
-from models import db, User, Profile, PlumberDetail, ChatRoom, Message
+from .models import db, User, Profile, PlumberDetail, ChatRoom, Message
 
 
 app = Flask(__name__)
