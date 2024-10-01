@@ -4,14 +4,16 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required, get_jwt
 import random
+from sqlalchemy import or_ 
 from datetime import timedelta
-from .models import db, User, Profile, PlumberDetail
+from models import db, User, Profile, PlumberDetail, ChatRoom, Message
 
 
 app = Flask(__name__)
 CORS(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aqua_fix_user:N2JS55z1oNjOwa1OSMesRVShpbPXDm9y@dpg-crlu8dtumphs73edkdt0-a.oregon-postgres.render.com/aqua_fix"
+#app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost/aqua_db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aqua_fix_haha_user:8MpXDQR4jZD6ANopnhqDAydHyodaQ2rS@dpg-crtop8dds78s73f1e3dg-a.oregon-postgres.render.com/aqua_fix_haha"
 app.config["JWT_SECRET_KEY"] = "fsbdgfnhgvjnvhmvh" + str(random.randint(1, 1000000000000))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV" + str(random.randint(1, 1000000000000))
@@ -300,23 +302,105 @@ def update_profile():
 
 
 
+# chat section
+#create room
+@app.route('/chatroom', methods=['POST'])
+@jwt_required()
+def get_or_create_chatroom():
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
+    plumber_id = data.get('plumber_id')
+
+    if not plumber_id:
+        return jsonify({"error": "Plumber ID is required"}), 400
+
+    # Check if a chatroom already exists between the current user and the plumber
+    chatroom = ChatRoom.query.filter_by(user_id=current_user_id, plumber_id=plumber_id).first()
+    
+    if not chatroom:
+        # Create a new chatroom
+        chatroom = ChatRoom(user_id=current_user_id, plumber_id=plumber_id)
+        db.session.add(chatroom)
+        db.session.commit()
+
+    return jsonify({"chatroom_id": chatroom.id}), 201
+
+#send message
+@app.route('/chatroom/<int:chatroom_id>/message', methods=['POST'])
+@jwt_required()
+def send_message(chatroom_id):
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
+    content = data.get('message')
+    receiver_id = int(data.get('plumber_id'))
+
+    if not content or not receiver_id:
+        return jsonify({"error": "Content and receiver ID are required"}), 400
+
+    # Ensure the chatroom exists and the current user is part of the chatroom
+    chatroom = ChatRoom.query.get_or_404(chatroom_id)
+    if chatroom.user_id != current_user_id and chatroom.plumber_id != current_user_id:
+        return jsonify({"error": "Unauthorized to send message in this chatroom"}), 403
+
+    # Create and store the message
+    message = Message(chatroom_id=chatroom.id, sender_id=current_user_id, receiver_id=receiver_id, content=content)
+    db.session.add(message)
+    db.session.commit()
+
+    return jsonify({"success": "Message sent"}), 201
+
+#get chatroom
 
 
 
+@app.route('/chatroom/<int:plumber_id>', methods=['GET'])
+@jwt_required()
+def get_chatroom(plumber_id):
+    current_user_id = get_jwt_identity()  # Get the currently logged-in user's ID
 
+    # Query the chatroom for the current user and the specified plumber
+    chatroom = ChatRoom.query.filter_by(user_id=current_user_id, plumber_id=plumber_id).first()
 
+    if chatroom:
+        return jsonify({'chatroom_id': chatroom.id}), 200  # Return the chatroom ID if found
+    else:
+        return jsonify({'message': 'Chatroom not found'}), 404  # Return an error if not found
 
+#get messages
+@app.route('/chatroom/<plumber_id>/messages', methods=['GET'])
+@jwt_required()
+def get_messages(plumber_id):
+    current_user_id = get_jwt_identity()  # Get the current user's ID from the JWT
+    
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized"}), 403
 
+    print(f"Current user ID: {current_user_id}")  # Debugging log to check the identity
 
+    # Fetch messages from the database where either user is the sender or recipient
+    messages = Message.query.filter(
+        or_(
+            (Message.sender_id == current_user_id) & (Message.receiver_id == plumber_id),
+            (Message.sender_id == plumber_id) & (Message.receiver_id == current_user_id)
+        )
+    ).order_by(Message.timestamp.asc()).all()
 
+    if not messages:
+        return jsonify({'message': 'No messages found'}), 404
 
+    # Convert messages to a JSON-serializable format
+    messages_list = [{
+        'id': message.id,
+        'sender_id': message.sender_id,
+        'receiver_id': message.receiver_id,
+        'message': message.content,  # Ensure this matches the field name in your model
+        'timestamp': message.timestamp.isoformat()  # Format timestamp for JSON
+    } for message in messages]
 
-
-
-
-
+    return jsonify(messages_list), 200
 
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+

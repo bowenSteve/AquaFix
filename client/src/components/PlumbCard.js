@@ -12,14 +12,22 @@ function PlumbCard() {
     const [plumber, setPlumber] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [rating, setRating] = useState(3); // Hardcoded rating for testing
+    const [showChat, setShowChat] = useState(false); // State to toggle chat window
+    const [message, setMessage] = useState(""); // State to handle the message text
+    const [chatroomId, setChatroomId] = useState(null); // Initialize as null
+    const [messages, setMessages] = useState([])
+    const [currentUser, setCurrentUser] = useState('')
 
     useEffect(() => {
-        fetch(`https://aquafix.onrender.com/plumber/${id}`)
+        fetch(`/plumber/${id}`)
             .then(res => res.json())
             .then(data => {
                 setPlumber(data);
-                // Comment out the line below to keep the hardcoded rating
-                // setRating(data.average_rating || 4.5); // This was overwriting the hardcoded rating
+                // Fetch chatroom after getting plumber data
+                if (data.plumber_details) {
+                    fetchChatroom(id); // Assuming the plumber's id is available in plumber_details
+                    fetchMessages()
+                }
             })
             .catch(error => {
                 console.error('Error fetching plumber:', error);
@@ -27,7 +35,7 @@ function PlumbCard() {
 
         const token = localStorage.getItem('token');
         if (token) {
-            fetch("https://aquafix.onrender.com/current_user", {
+            fetch("/current_user", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -37,6 +45,7 @@ function PlumbCard() {
                 .then(data => {
                     if (data.id) {
                         setIsLoggedIn(true);
+                        setCurrentUser(data)
                     }
                 })
                 .catch(error => {
@@ -63,6 +72,114 @@ function PlumbCard() {
             </>
         );
     };
+    console.log(messages)
+    //function to create chatroom
+
+    const createChatroom = () =>{
+        const token = localStorage.getItem('token');
+        fetch('/chatroom',{
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({plumber_id:id})
+        })
+        .then(res=>res.json())
+        .then(res=>{
+            console.log(res)
+        })
+    }
+useEffect((()=>{
+    createChatroom()
+}),[])
+    // Function to handle chat toggling
+    const handleChatToggle = () => {
+        setShowChat(!showChat);
+    };
+
+    // Function to handle chatroom ID
+    const fetchChatroom = (id) => {
+        const token = localStorage.getItem('token');
+
+        fetch(`/chatroom/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then(data => {
+            setChatroomId(data.chatroom_id); // Store chatroom ID
+            console.log('Chatroom ID:', data.chatroom_id);
+        })
+        .catch(error => {
+            console.error('Error fetching chatroom:', error);
+        });
+    };
+    //Function to handle fetching messages
+    const fetchMessages = () => {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            console.error("No token found");
+            return;
+        }
+    
+        fetch(`/chatroom/${id}/messages`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then(data => {
+            setMessages(data);
+        })
+        .catch(error => {
+            console.error('Error fetching messages:', error);
+        });
+    };
+    
+    
+    // Call this function whenever you need to fetch messages, e.g., when the chat window is opened.
+    
+
+    // Function to handle sending message
+    const handleSendMessage = () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please log in to send a message');
+            return;
+        }
+
+        fetch(`/chatroom/${chatroomId}/message`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ message, plumber_id: id })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Message sent:', data);
+                setMessage("");  // Clear the message input
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+            });
+    };
 
     if (!plumber) {
         return <div className="alert alert-danger" role="alert">Plumber not found</div>;
@@ -74,6 +191,51 @@ function PlumbCard() {
             <div className='container main-card'>
                 <div className="col-md-12">
                     <div className="card mb-4">
+                        {/* Send Message Button */}
+                        <button
+                            className="btn btn-primary"
+                            style={{ position: "absolute", top: "10px", right: "10px" }}
+                            onClick={handleChatToggle}
+                        >
+                            Chat with {plumber.profile.first_name}
+                        </button>
+
+                        {/* Chat Area (Visible when Send Message is clicked) */}
+                        {showChat && (
+                            <div className="card chat-card mt-4" style={{ position: "absolute", top: "50px", right: "10px", width: "300px" }}>
+                                <div className="card-body">
+                                    <p>Start a conversation with {plumber.profile.first_name}</p>
+                                    <div className="messages-container">
+    {messages.map((msg, index) => (
+        <div key={index} className={`message ${msg.sender_id === currentUser.id ? 'sent' : 'received'}`}>
+            {/* Display the name of the message sender */}
+            <p className="message-sender">
+                {msg.sender_id === currentUser.id
+                    ? currentUser.profile.first_name  // If the logged-in user is the sender
+                    : plumber.profile.first_name       // If the plumber is the sender
+                }
+            </p>
+            <p>{msg.message}</p>
+            <span>{new Date(msg.timestamp).toLocaleString()}</span>
+        </div>
+    ))}
+</div>
+
+
+
+
+                                    <textarea
+                                        className="form-control mb-3"
+                                        rows="3"
+                                        placeholder="Type your message..."
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                    ></textarea>
+                                    <button className="btn btn-primary" onClick={handleSendMessage}>Send Message</button>
+                                </div>
+                            </div>
+                        )}
+
                         <img
                             src={plumber.profile.image}
                             className="card-img-top profile-picture card-image"

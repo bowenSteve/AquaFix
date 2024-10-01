@@ -55,3 +55,30 @@ class PlumberDetail(db.Model):
 
     def __repr__(self):
         return f'<PlumberDetail {self.id_number}>'
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    chatroom_id = db.Column(db.Integer, db.ForeignKey('chat_rooms.id'), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Renamed from `receiver_id` to `recipient_id`
+    content = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = relationship('User', foreign_keys=[sender_id])
+    recipient = relationship('User', foreign_keys=[receiver_id])
+
+    def __repr__(self):
+        return f'<Message from {self.sender_id} to {self.receiver_id}: {self.content}>'
+
+class ChatRoom(db.Model):
+    __tablename__ = 'chat_rooms'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Client ID
+    plumber_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Plumber ID
+    messages = db.relationship('Message', backref='chatroom', lazy=True, cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f'<ChatRoom {self.user_id} - {self.plumber_id}>'
