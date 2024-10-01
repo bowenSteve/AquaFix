@@ -14,7 +14,7 @@ function Navbar() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetch("/current_user", {
+      fetch("https://aquafix.onrender.com/current_user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ function Navbar() {
 
   function logout() {
     const token = localStorage.getItem("token");
-    fetch("/logout", {
+    fetch("https://aquafix.onrender.com/logout", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -19,7 +19,7 @@ function PlumbCard() {
     const [currentUser, setCurrentUser] = useState('')
 
     useEffect(() => {
-        fetch(`/plumber/${id}`)
+        fetch(`https://aquafix.onrender.com/plumber/${id}`)
             .then(res => res.json())
             .then(data => {
                 setPlumber(data);
@@ -35,7 +35,7 @@ function PlumbCard() {
 
         const token = localStorage.getItem('token');
         if (token) {
-            fetch("/current_user", {
+            fetch("https://aquafix.onrender.com/current_user", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -77,7 +77,7 @@ function PlumbCard() {
 
     const createChatroom = () =>{
         const token = localStorage.getItem('token');
-        fetch('/chatroom',{
+        fetch('https://aquafix.onrender.com/chatroom',{
             method: 'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -102,7 +102,7 @@ useEffect((()=>{
     const fetchChatroom = (id) => {
         const token = localStorage.getItem('token');
 
-        fetch(`/chatroom/${id}`, {
+        fetch(`https://aquafix.onrender.com/chatroom/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -131,7 +131,7 @@ useEffect((()=>{
             return;
         }
     
-        fetch(`/chatroom/${id}/messages`, {
+        fetch(`https://aquafix.onrender.com/chatroom/${id}/messages`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -163,7 +163,7 @@ useEffect((()=>{
             return;
         }
 
-        fetch(`/chatroom/${chatroomId}/message`, {
+        fetch(`https://aquafix.onrender.com/chatroom/${chatroomId}/message`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
