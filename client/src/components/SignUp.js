@@ -36,7 +36,7 @@ function SignUp() {
       is_plumber: selected === 'plumber'
     };
 
-    fetch('/signup', {
+    fetch('https://aquafix.onrender.com/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
