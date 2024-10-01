@@ -356,9 +356,8 @@ def send_message(chatroom_id):
 @app.route('/chatroom/<int:plumber_id>', methods=['GET'])
 @jwt_required()
 def get_chatroom(plumber_id):
-    current_user_id = get_jwt_identity()  # Get the currently logged-in user's ID
+    current_user_id = get_jwt_identity()  
 
-    # Query the chatroom for the current user and the specified plumber
     chatroom = ChatRoom.query.filter_by(user_id=current_user_id, plumber_id=plumber_id).first()
 
     if chatroom:
