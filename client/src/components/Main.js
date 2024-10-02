@@ -11,15 +11,17 @@ function Main() {
   const [locationFilter, setLocationFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 6; 
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     fetch("https://aquafix.onrender.com/plumbers")
       .then((res) => res.json())
       .then((data) => {
         setPlumbers(data);
         setFilteredPlumbers(data);
+          setLoading(false)
       });
   }, []);
 
@@ -132,8 +134,11 @@ function Main() {
             </select>
           </div>
         </div>
-
-        <div className="row">
+        {loading ? (
+     <div className="d-flex justify-content-center align-items-center" style={{ height: "50vh" }}>
+     <h3>Server loading... keep refreshing</h3>
+   </div>) :   
+       ( <div className="row">
           {currentPlumbers.map((plumber, index) => (
             <div className="col-md-4" key={index}>
               <div
@@ -162,7 +167,7 @@ function Main() {
               </div>
             </div>
           ))}
-        </div>
+        </div>)}
 
         {/* Pagination Buttons */}
         <div className="d-flex justify-content-center my-3">
