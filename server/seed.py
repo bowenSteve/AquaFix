@@ -25,13 +25,14 @@ profiles_data = [
 
 # Create plumber details data
 plumber_details_data = [
-    {'id_number': 'PL1234567', 'years_of_experience': 5, 'services_offered': 'pipe installation', 'rates': '1000', 'about_me': 'Experienced in pipe installation and repair.'},
-    {'id_number': 'PL2345678', 'years_of_experience': 6, 'services_offered': 'welding', 'rates': '2000', 'about_me': 'Skilled welder with expertise in various welding techniques.'},
-    {'id_number': 'PL3456789', 'years_of_experience': 4, 'services_offered': 'carpentry', 'rates': '1500', 'about_me': 'Proficient in carpentry with a focus on custom woodwork.'},
-    {'id_number': 'PL4567890', 'years_of_experience': 7, 'services_offered': 'electrical wiring', 'rates': '3000', 'about_me': 'Certified electrician with extensive experience in wiring and repairs.'},
-    {'id_number': 'PL5678901', 'years_of_experience': 8, 'services_offered': 'plumbing', 'rates': '2000', 'about_me': 'Expert plumber specializing in residential and commercial plumbing services.'},
-    {'id_number': 'PL6789012', 'years_of_experience': 3, 'services_offered': 'painting', 'rates': '2500', 'about_me': 'Creative painter with a keen eye for detail and design.'},
+    {'id_number': 'PL1234567', 'years_of_experience': 5, 'services_offered': 'pipe installation and repair', 'rates': '1000', 'about_me': 'Experienced in pipe installation and repair.'},
+    {'id_number': 'PL2345678', 'years_of_experience': 6, 'services_offered': 'leak detection and repair', 'rates': '1200', 'about_me': 'Specialized in detecting and repairing water leaks.'},
+    {'id_number': 'PL3456789', 'years_of_experience': 4, 'services_offered': 'drain cleaning', 'rates': '800', 'about_me': 'Proficient in clearing blocked drains and pipes.'},
+    {'id_number': 'PL4567890', 'years_of_experience': 7, 'services_offered': 'sewer line repair', 'rates': '1500', 'about_me': 'Expert in sewer line installation and repair.'},
+    {'id_number': 'PL5678901', 'years_of_experience': 8, 'services_offered': 'full residential plumbing', 'rates': '2000', 'about_me': 'Experienced in residential plumbing, including installation and maintenance.'},
+    {'id_number': 'PL6789012', 'years_of_experience': 3, 'services_offered': 'emergency plumbing services', 'rates': '2500', 'about_me': 'Available for emergency plumbing repairs at any time.'},
 ]
+
 
 # Create chat room data
 chat_rooms_data = [
