@@ -20,6 +20,7 @@
     transition: transform 0.3s ease;
 }
 .plumb-card:hover{
+    cursor: pointer;
     transform: translateY(-10px);
 }
 .next-btn{
