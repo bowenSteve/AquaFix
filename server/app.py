@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 #app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost/aqua_db"
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aqua_fix_haha_user:8MpXDQR4jZD6ANopnhqDAydHyodaQ2rS@dpg-crtop8dds78s73f1e3dg-a.oregon-postgres.render.com/aqua_fix_haha"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aqua_fix_a7iy_user:5TLFW9qx0qaMk0p826yH9DBFimpJ0AfB@dpg-cshj9m08fa8c739efui0-a.oregon-postgres.render.com/aqua_fix_a7iy"
 app.config["JWT_SECRET_KEY"] = "fsbdgfnhgvjnvhmvh" + str(random.randint(1, 1000000000000))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV" + str(random.randint(1, 1000000000000))
